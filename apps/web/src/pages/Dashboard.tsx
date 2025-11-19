@@ -1,18 +1,28 @@
+import { useEffect } from "react";
 import { authClient } from "../lib/auth-client";
 import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
-    const { data: session } = authClient.useSession();
+    const { data: session, isPending, error } = authClient.useSession();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!isPending && !session) {
+            navigate("/login");
+        }
+    }, [session, isPending, navigate]);
 
     const handleSignOut = async () => {
         await authClient.signOut();
         navigate("/login");
     };
 
+    if (isPending) {
+        return <div className="min-h-screen flex items-center justify-center text-white">Loading...</div>;
+    }
+
     if (!session) {
-        navigate("/login");
-        return null;
+        return null; // Will redirect via useEffect
     }
 
     return (

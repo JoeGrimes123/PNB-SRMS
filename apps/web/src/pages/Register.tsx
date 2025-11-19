@@ -21,6 +21,7 @@ export default function Register() {
             email,
             password,
             name,
+            callbackURL: "http://localhost:5173/login",
         });
 
         setLoading(false);

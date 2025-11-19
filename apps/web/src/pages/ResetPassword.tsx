@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { authClient } from "../lib/auth-client";
 import BackgroundGradients from "../components/BackgroundGradients";
@@ -6,36 +6,31 @@ import BackgroundGradients from "../components/BackgroundGradients";
 export default function ResetPassword() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [error, setError] = useState("");
+    const [submitError, setSubmitError] = useState("");
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
     const token = searchParams.get("token");
-
-    useEffect(() => {
-        if (!token) {
-            setError("Invalid reset link. Please request a new password reset.");
-        }
-    }, [token]);
+    const error = !token ? "Invalid reset link. Please request a new password reset." : submitError;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError("");
+        setSubmitError("");
 
         if (password !== confirmPassword) {
-            setError("Passwords do not match");
+            setSubmitError("Passwords do not match");
             return;
         }
 
         if (password.length < 8) {
-            setError("Password must be at least 8 characters");
+            setSubmitError("Password must be at least 8 characters");
             return;
         }
 
         if (!token) {
-            setError("Invalid reset link");
+            setSubmitError("Invalid reset link");
             return;
         }
 
@@ -49,7 +44,7 @@ export default function ResetPassword() {
         setLoading(false);
 
         if (error) {
-            setError(error.message || "Failed to reset password");
+            setSubmitError(error.message || "Failed to reset password");
         } else {
             setSuccess(true);
         }

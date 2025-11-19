@@ -9,15 +9,21 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 app.use(cors({
-    origin: "http://localhost:5173", // Adjust if your frontend port is different
+    origin: true, // Reflects the request origin, solving mismatch issues
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-app.use(express.json());
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    console.log('Origin:', req.headers.origin);
+    next();
+});
 
 app.all("/api/auth/*", toNodeHandler(auth));
+
+app.use(express.json());
 
 app.get("/health", (req, res) => {
     res.json({ status: "ok" });
